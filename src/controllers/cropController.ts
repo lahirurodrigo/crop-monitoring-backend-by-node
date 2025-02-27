@@ -18,7 +18,10 @@ export const getCropById = async (req: Request, res: Response) => {
     try {
         const id  = req.params.id;
         const crop = await prisma.crop.findUnique({ where: { cropCode: id } });
-        if (!crop) return res.status(404).json({ error: "Crop not found" });
+        if (!crop) {
+            res.status(404).json({ error: "Crop not found" });
+            return
+        }
         res.json(crop);
     } catch (error) {
         res.status(500).json({ error: "Failed to fetch crop" });
