@@ -9,6 +9,96 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  email    String @id
+  password String
+  role     Role
+}
+
+model Staff {
+  staffId     String   @id
+  firstName   String
+  lastName    String
+  designation String
+  gender      Gender
+  joinDate    DateTime
+  DOB         DateTime
+  address01   String
+  address02   String
+  address03   String?
+  address04   String?
+  address05   String?
+  contactNo   String
+  email       String
+  role        Role
+
+  logs   MonitoringLog[]
+  fields Field[]         @relation("FieldStaff") // Many-to-Many relation with Field
+}
+
+model Field {
+  fieldCode     String @id
+  fieldName     String
+  fieldLocation String
+  fieldSize     Float
+  fieldImage01  String
+  fieldImage02  String
+
+  cropCode String
+  crop     Crop   @relation(fields: [cropCode], references: [cropCode])
+
+  logServices  MonitoringLog[]
+  staffMembers Staff[]         @relation("FieldStaff") // Many-to-Many relation with Staff
+  equipments   Equipment[]
+}
+
+model Crop {
+  cropCode           String @id
+  cropCommonName     String
+  cropScientificName String
+  cropImage          String
+  cropCategory       String
+  cropSeason         String
+
+  fields Field[]
+  logs   MonitoringLog[]
+}
+
+model MonitoringLog {
+  logCode       String   @id
+  logDate       DateTime
+  logDetails    String
+  observedImage String
+
+  staffId   String
+  fieldCode String
+  cropCode  String
+
+  staff Staff @relation(fields: [staffId], references: [staffId])
+  field Field @relation(fields: [fieldCode], references: [fieldCode])
+  crop  Crop  @relation(fields: [cropCode], references: [cropCode])
+}
+
+model Equipment {
+  id        String @id
+  name      String
+  fieldCode String
+
+  field Field @relation(fields: [fieldCode], references: [fieldCode])
+}
+
+enum Role {
+  ADMIN
+  STAFF
+  USER
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
 }
