@@ -43,13 +43,15 @@ export const createUser = async (req: Request, res: Response) => {
 
 // Update a User
 export const updateUser = async (req: Request, res: Response) => {
+    console.log("Update User Method")
     try {
         const user = req.body;
         const id = req.params.id;
-        const newUser = await prisma.user.update({
+        const updatedUser = await prisma.user.update({
             where: { email: id},
             data: user
         });
+        res.status(200).json(updatedUser);
     } catch (error) {
         res.status(500).json(error)
     }
@@ -57,6 +59,7 @@ export const updateUser = async (req: Request, res: Response) => {
 
 // Delete a User
 export const deleteUser = async (req: Request, res: Response) => {
+    console.log("Delete User Method")
     try {
         const id = req.params.id;
         await prisma.user.delete({
