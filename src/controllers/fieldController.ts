@@ -18,7 +18,10 @@ export const getFieldById = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
         const field = await prisma.field.findUnique({ where: { fieldCode: id } });
-        if (!field) return res.status(404).json({ error: "Field not found" });
+        if (!field) {
+            res.status(404).json({ error: "Field not found" });
+            return
+        }
         res.json(field);
     } catch (error) {
         res.status(500).json({ error: "Failed to fetch field" });
