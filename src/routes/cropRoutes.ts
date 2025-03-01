@@ -1,5 +1,5 @@
 import express from "express";
-import {createCrop, getCrops, updateCrop} from "../controllers/cropController";
+import {createCrop, getCrops, updateCrop, deleteCrop} from "../controllers/cropController";
 import Crop from "../model/CropModel";
 
 const router = express.Router();
@@ -58,6 +58,17 @@ router.put("/:id", async(req,res,next)=>{
 
 });
 
-// router.delete("/:id", deleteCrop);
+router.delete("/:id",async(req,res,next)=>{
+
+    const id = req.params.id
+
+    try{
+        const response = await deleteCrop(id);
+        res.status(200).json();
+    }catch(e){
+        console.error('Error during registration:', e);
+    }
+
+});
 
 export default router;

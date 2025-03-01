@@ -1,68 +1,72 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client"
+import {Crop, PrismaClient} from "@prisma/client"
+import FieldModel from "../model/FieldModel";
 
 const prisma = new PrismaClient();
 
 // Get all fields
-export const getFields = async (req: Request, res: Response) => {
+export const getFields = async () => {
     try {
-        const fields = await prisma.field.findMany();
-        res.json(fields);
+        return await prisma.field.findMany()
     } catch (error) {
-        res.status(500).json({ error: "Failed to fetch fields" });
+        console.error('Error fetching crops:', error);
     }
 };
 
-// Get a single field by ID
-export const getFieldById = async (req: Request, res: Response) => {
-    try {
-        const { id } = req.params;
-        const field = await prisma.field.findUnique({ where: { fieldCode: id } });
-        if (!field) {
-            res.status(404).json({ error: "Field not found" });
-            return
-        }
-        res.json(field);
-    } catch (error) {
-        res.status(500).json({ error: "Failed to fetch field" });
-    }
-};
+// // Get a single field by ID
+// export const getFieldById = async (req: Request, res: Response) => {
+//     try {
+//         const { id } = req.params;
+//         const field = await prisma.field.findUnique({ where: { fieldCode: id } });
+//         if (!field) {
+//             res.status(404).json({ error: "Field not found" });
+//             return
+//         }
+//         res.json(field);
+//     } catch (error) {
+//         res.status(500).json({ error: "Failed to fetch field" });
+//     }
+// };
+
+
 
 // Create a new field
-export const createField = async (req: Request, res: Response) => {
+export const createField = async (field: FieldModel) => {
     try {
-
-        const { fieldCode, fieldName, fieldLocation, fieldSize, fieldImage01, fieldImage02, staffMembers, cropCode } = req.body;
-        const field = await prisma.field.create({
-            data: { fieldCode, fieldName, fieldLocation, fieldSize, fieldImage01, fieldImage02,staffMembers, cropCode },
-        });
-        res.status(201).json(field);
+        const savedField = await prisma.field.create({data: field});
     } catch (error) {
-        res.status(500).json({ error: "Failed to create field" });
+        console.log(error)
+    }
+};
+
+export const updateCrop = async (crop: Crop, id: string) => {
+    try {
+        const updatedCrop = await prisma.crop.update({
+            where: { cropCode: id },
+            data: crop,
+        });
+    } catch (error) {
+        console.log(error)
     }
 };
 
 // Update an existing field
-export const updateField = async (req: Request, res: Response) => {
+export const updateField = async (field: FieldModel, id: string) => {
     try {
-        const { id } = req.params;
         const updatedField = await prisma.field.update({
             where: { fieldCode: id },
-            data: req.body,
+            data: field,
         });
-        res.json(updatedField);
     } catch (error) {
-        res.status(500).json({ error: "Failed to update field" });
+        console.log(error)
     }
 };
 
 // Delete a field
-export const deleteField = async (req: Request, res: Response) => {
+export const deleteField = async (id: string) => {
     try {
-        const { id } = req.params;
         await prisma.field.delete({ where: { fieldCode: id } });
-        res.status(204).send();
     } catch (error) {
-        res.status(500).json({ error: "Failed to delete field" });
+        console.log(error)
     }
 };

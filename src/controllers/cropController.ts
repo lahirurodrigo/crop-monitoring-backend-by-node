@@ -39,16 +39,15 @@ export const updateCrop = async (crop: Crop, id: string) => {
             data: crop,
         });
     } catch (error) {
+        console.log(error)
     }
 };
 
 // Delete a crop
-// export const deleteCrop = async (req: express.Request, res: express.Response) => {
-//     try {
-//         const id = req.params.id;
-//         await prisma.crop.delete({ where: { cropCode: id } });
-//         res.status(204).send();
-//     } catch (error) {
-//         res.status(500).json();
-//     }
-// };
+export const deleteCrop = async (id: string) => {
+    try {
+        await prisma.crop.delete({ where: { cropCode: id } });
+    } catch (error) {
+        console.log(error)
+    }
+};
