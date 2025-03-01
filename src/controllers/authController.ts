@@ -18,22 +18,28 @@ export const registerUser = async (user:UserModel) => {
     }
 };
 
-export const validateUser = async(user:UserModel)=>{
-    try{
-        const fidedUser : UserModel | null = await userClient.findUnique({
-            where:{
-                email:user.email
+export const validateUser = async (user: UserModel) => {
+    try {
+        const foundUser: UserModel | null = await userClient.findUnique({
+            where: {
+                email: user.email
             }
-        })
+        });
 
-        if(!fidedUser){
+        if (!foundUser) {
             return false;
         }
-        console.log(fidedUser.password);
-        console.log(user.password);
 
-        return await bcrypt.compare( user.password,fidedUser.password);
-    }catch(e){
+        console.log("Password from DB:", foundUser.password); // The stored hash
+        console.log("Entered Password:", user.password); // The password you're trying to validate
+
+        const isMatch = await bcrypt.compare(user.password, foundUser.password);
+
+        console.log("Password Match:", isMatch); // This will log the result of bcrypt.compare
+
+        return isMatch;
+    } catch (e) {
         console.log(e);
     }
-}
+};
+

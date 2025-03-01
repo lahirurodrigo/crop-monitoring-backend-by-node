@@ -29,23 +29,31 @@ router.post('/login',async(req,res)=>{
     const username = req.body.username;
     const password = req.body.password;
 
+    console.log("login called")
+
     const user : UserModel  = new UserModel(username,password,"USER");
 
     try{
-        const userStatus  = await validateUser(user);
-
+        const userStatus  = await validateUser(user)
+        console.log(userStatus)
         if(userStatus){
             const accessToken = jwt.sign({username:user.email},process.env.ACCESSSECRET_KEY as Secret, {expiresIn: "10m"});
             const refreshToken = jwt.sign({username:user.email},process.env.SECRET_KEY as Secret, {expiresIn: "10d"});
+            console.log(accessToken)
             res.status(201).json({
                 accessToken:accessToken,
                 refreshToken:refreshToken
             })
+
+
+
         }else{
+            console.log("Error still credentials match")
             res.status(401).json("Credential doesn't match");
         }
 
     }catch(e){
+        console.log(e)
         res.status(500).json(e);
     }
 
@@ -68,22 +76,22 @@ router.post('/refresh',async(req,res)=>{
     }
 })
 
-export const authenticateToken = (req:Request,res:Response,next:NextFunction)=>{
+export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
-    const token  = authHeader?.substring(7);
+    const token = authHeader?.substring(7);
 
-    if(!token){
-        res.status(401).json('No Token Provided');
+    if (!token) {
+        return res.status(401).json('No Token Provided'); // Ensure to return after response
     }
 
-    try{
+    try {
         const payload = jwt.verify(token as string, process.env.SECRET_KEY as Secret) as { username: string, iat: number };
         req.body.username = payload.username;
         next();
-
-    }catch(e){
-        res.status(403).json(e);
+    } catch (e) {
+        return res.status(403).json(e); // Ensure to return after response
     }
 }
+
 
 export default router;
