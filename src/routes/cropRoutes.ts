@@ -1,10 +1,20 @@
 import express from "express";
-import {  createCrop, updateCrop } from "../controllers/cropController";
+import {createCrop, getCrops, updateCrop} from "../controllers/cropController";
 import Crop from "../model/CropModel";
 
 const router = express.Router();
 
-// router.get("/", getCrops);
+router.get("/", async(req,res,next)=>{
+    console.log("Fetch method calling");
+    try{
+        const crops = await getCrops()
+        res.status(200).json(crops);
+    }catch(e){
+        console.error('Error during registration:', e);
+        res.status(500).json({ error: 'An error occurred during registration', details: e });
+    }
+
+});
 
 router.post('/', async(req,res,next)=>{
     const code = req.body.cropCode;
@@ -48,6 +58,6 @@ router.put("/:id", async(req,res,next)=>{
 
 });
 
-//router.delete("/:id", deleteCrop);
+// router.delete("/:id", deleteCrop);
 
 export default router;

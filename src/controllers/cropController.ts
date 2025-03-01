@@ -3,16 +3,14 @@ import {Crop, PrismaClient} from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-// // Get all crops
-// export const getCrops = async (req: express.Request, res: express.Response) => {
-//     try {
-//         const crops = await prisma.crop.findMany();
-//         res.json(crops);
-//     } catch (error) {
-//         res.status(500);
-//     }
-// };
-
+// Get all crops
+export const getCrops = async () => {
+    try {
+        return  await prisma.crop.findMany();
+    } catch (error) {
+        console.error('Error fetching crops:', error);
+    }
+};
 // // Get a single crop by ID
 // export const getCropById = async (req: express.Request, res: express.Response) => {
 //     try {
